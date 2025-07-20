@@ -16,6 +16,7 @@
   "scripts": {
     "prebuild": "tsc -p src/tsconfig.json",
     "build": "tsup",
+    "dev": "tsup --watch",
     "prepublishOnly": "pnpm run build",
     "postinstall": "adobe-font-extractor install",
     "format": "dprint fmt",
