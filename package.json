@@ -1,6 +1,6 @@
 {
   "name": "adobe-font-extractor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Luca Schultz",
   "description": "A command-line utility for extracting Adobe fonts on macOS and Windows.",
   "keywords": ["font", "cli", "adobe", "typography"],
@@ -48,15 +48,15 @@
     "minify": true
   },
   "dependencies": {
-    "@changesets/cli": "^2.29.5",
     "@stricli/auto-complete": "^1.2.0",
     "@stricli/core": "^1.2.0",
     "arktype": "^2.1.20",
-    "dprint": "^0.50.1",
     "fontkit": "^2.0.4",
     "picomatch": "^4.0.3"
   },
   "devDependencies": {
+    "dprint": "^0.50.1",
+    "@changesets/cli": "^2.29.5",
     "@biomejs/biome": "2.1.2",
     "@types/fontkit": "^2.0.8",
     "@types/node": "24.x",
