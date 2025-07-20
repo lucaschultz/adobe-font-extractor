@@ -26,7 +26,8 @@
     "lint:spelling": "cspell .",
     "lint:knip": "knip",
     "lint:md": "markdownlint-cli2",
-    "ci": "pnpm lint && pnpm format:check && pnpm lint:md && pnpm lint:knip && pnpm lint:spelling && pnpm typecheck"
+    "ci": "pnpm lint && pnpm format:check && pnpm lint:md && pnpm lint:knip && pnpm lint:spelling && pnpm typecheck",
+    "ci:fix": "pnpm lint:fix && pnpm format"
   },
   "tsup": {
     "entry": ["src/bin/cli.ts", "src/bin/bash-complete.ts"],
