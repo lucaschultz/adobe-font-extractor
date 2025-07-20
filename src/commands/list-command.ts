@@ -1,10 +1,14 @@
 import { buildCommand } from "@stricli/core";
 import { type } from "arktype";
-import picomatch from "picomatch";
-import { DefaultFilter, DefaultFontDirectory } from "../constants";
 import type { LocalContext } from "../context";
 import { directoryExists } from "../utils/directory-exists";
 import { getFontFontInfos } from "../utils/get-font-infos";
+import { getPlatform } from "../utils/get-platform";
+import { getSource } from "../utils/get-source";
+import {
+  DefaultFilter,
+  makeFontInfoFilter,
+} from "../utils/make-font-info-filter";
 import {
   makeLogger,
   type VerbosityLevel,
@@ -21,22 +25,31 @@ interface Flags {
 export const listCommand = buildCommand({
   async func(this: LocalContext, flags: Flags): Promise<void> {
     const logger = makeLogger(flags.verbosity);
+
     logger.section("List Adobe Fonts".toUpperCase());
     logger.newLine();
 
-    if (!(await directoryExists(flags.source ?? DefaultFontDirectory))) {
-      if (flags.source) {
-        logger.error(`Source directory "${flags.source}" does not exist`);
+    const platform = getPlatform();
+    if (platform.status === "incompatible") {
+      logger.error(platform.message);
+      return process.exit(1);
+    }
+
+    const source = getSource(platform.name, flags);
+
+    if (!(await directoryExists(source.path))) {
+      if (source.type === "custom") {
+        logger.error(`Source directory "${source.path}" does not exist`);
       } else {
         logger.error(
-          `Adobe font directory does not exist, make sure you have the Creative Cloud app installed.`,
+          `Font directory "${source.path}" does not exist, make sure you have the Creative Cloud app installed and running.`,
         );
       }
       return process.exit(1);
     }
 
     const fontInfos = await getFontFontInfos({
-      source: flags.source ?? DefaultFontDirectory,
+      source: source.path,
     });
 
     if (fontInfos.length === 0) {
@@ -46,10 +59,7 @@ export const listCommand = buildCommand({
       return process.exit(0);
     }
 
-    const filterMatcher = picomatch(flags.pattern || DefaultFilter);
-    const filteredFontInfos = fontInfos.filter((fontInfo) =>
-      filterMatcher(fontInfo.name)
-    );
+    const filteredFontInfos = fontInfos.filter(makeFontInfoFilter(flags));
 
     if (filteredFontInfos.length === 0) {
       logger.warn(

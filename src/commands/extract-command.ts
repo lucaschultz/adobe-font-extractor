@@ -1,12 +1,16 @@
 import { buildCommand } from "@stricli/core";
 import { type } from "arktype";
 import * as path from "node:path";
-import picomatch from "picomatch";
-import { DefaultFilter, DefaultFontDirectory } from "../constants";
 import type { LocalContext } from "../context";
 import { copyFile } from "../utils/copy-file";
 import { directoryExists } from "../utils/directory-exists";
 import { getFontFontInfos } from "../utils/get-font-infos";
+import { getPlatform } from "../utils/get-platform";
+import { getSource } from "../utils/get-source";
+import {
+  DefaultFilter,
+  makeFontInfoFilter,
+} from "../utils/make-font-info-filter";
 import {
   makeLogger,
   type Summary,
@@ -33,16 +37,25 @@ export const extractCommand = buildCommand({
   ): Promise<void> {
     const start = performance.now();
     const logger = makeLogger(flags.verbosity);
+
     logger.section("Adobe Font Extractor".toUpperCase());
     logger.newLine();
 
-    if (!(await directoryExists(flags.source ?? DefaultFontDirectory))) {
-      if (!flags.source) {
-        logger.error(
-          `Default Adobe fonts directory "${DefaultFontDirectory}" does not exist`,
-        );
+    const platform = getPlatform();
+    if (platform.status === "incompatible") {
+      logger.error(platform.message);
+      return process.exit(1);
+    }
+
+    const source = getSource(platform.name, flags);
+
+    if (!(await directoryExists(source.path))) {
+      if (source.type === "custom") {
+        logger.error(`Source directory "${source.path}" does not exist`);
       } else {
-        logger.error(`Source directory "${flags.source}" does not exist`);
+        logger.error(
+          `Font directory "${source.path}" does not exist, make sure you have the Creative Cloud app installed and running.`,
+        );
       }
 
       return process.exit(1);
@@ -51,7 +64,7 @@ export const extractCommand = buildCommand({
     logger.task(`Searching fonts${flags.source ? ` in ${flags.source}` : ""}`);
 
     const fontInfos = await getFontFontInfos({
-      source: flags.source ?? DefaultFontDirectory,
+      source: source.path,
     });
 
     if (fontInfos.length === 0) {
@@ -66,10 +79,7 @@ export const extractCommand = buildCommand({
       return process.exit(0);
     }
 
-    const matcher = picomatch(flags.pattern);
-    const filteredFontInfos = fontInfos.filter((fontInfo) =>
-      matcher(fontInfo.name)
-    );
+    const filteredFontInfos = fontInfos.filter(makeFontInfoFilter(flags));
 
     if (filteredFontInfos.length === 0) {
       logger.warn(
@@ -113,9 +123,9 @@ export const extractCommand = buildCommand({
       } else if (result.status === "skipped") {
         skippedCount++;
         logger.warn(
-          `File "${
-            relative(fontDestinationPath)
-          }" already exists (use --force to overwrite)`,
+          `File "${relative(
+            fontDestinationPath,
+          )}" already exists (use --force to overwrite)`,
         );
       } else if (result.status === "error") {
         errorCount++;
@@ -123,9 +133,9 @@ export const extractCommand = buildCommand({
           throw result.cause;
         }
         logger.error(
-          `Failed to copy "${
-            relative(fontDestinationPath)
-          }" (use --abort to stop on errors)`,
+          `Failed to copy "${relative(
+            fontDestinationPath,
+          )}" (use --abort to stop on errors)`,
         );
       }
     }
@@ -250,8 +260,7 @@ function summarize(result: CommandResult): {
 
       summary.push({
         type: "info",
-        message:
-          `Copied ${fontsCopiedSuccessfully} of ${fontsFiltered} fonts to "${relativeDestination}"`,
+        message: `Copied ${fontsCopiedSuccessfully} of ${fontsFiltered} fonts to "${relativeDestination}"`,
       });
 
       if (fontsSkipped > 0) {
@@ -286,9 +295,9 @@ function summarize(result: CommandResult): {
 
   summary.push({
     type: "info",
-    message: `Operation took ${
-      result.duration.toFixed(2)
-    } ms (verbosity: ${result.flags.verbosity})`,
+    message: `Operation took ${result.duration.toFixed(
+      2,
+    )} ms (verbosity: ${result.flags.verbosity})`,
   });
 
   return { exitCode, summary };

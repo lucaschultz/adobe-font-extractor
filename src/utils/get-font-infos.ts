@@ -2,7 +2,7 @@ import * as fontkit from "fontkit";
 import * as fs from "node:fs/promises";
 import path from "node:path";
 
-interface FontInfo {
+export interface FontInfo {
   name: string;
   path: string;
 }
