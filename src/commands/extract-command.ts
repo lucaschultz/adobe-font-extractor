@@ -134,7 +134,7 @@ export const extractCommand = buildCommand({
         logger.error(
           `Failed to copy "${relative(
             fontDestinationPath,
-          )}" (use --abort to stop on errors)`,
+          )}" (use --abort to abort on errors)`,
         );
       }
     }
@@ -166,7 +166,7 @@ export const extractCommand = buildCommand({
 
       abortOnError: {
         kind: "boolean",
-        brief: "Stop on recoverable errors",
+        brief: "Abort on recoverable errors",
         default: false,
       },
       force: {

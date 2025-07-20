@@ -18,12 +18,6 @@ export const CommonFlagsAliases = {
 } satisfies Aliases<keyof CommonFlags & string>;
 
 export const CommonFlagsConfig = {
-  verbosity: {
-    kind: "enum",
-    values: VerbosityLevels,
-    brief: "Set the verbosity",
-    default: "info",
-  },
   sourceDirectory: {
     optional: true,
     kind: "parsed",
@@ -31,6 +25,12 @@ export const CommonFlagsConfig = {
     parse: makeParser(type("string")),
     placeholder: "source",
     hidden: true,
+  },
+  verbosity: {
+    kind: "enum",
+    values: VerbosityLevels,
+    brief: "Set the verbosity",
+    default: "info",
   },
   globPattern: {
     kind: "parsed",
