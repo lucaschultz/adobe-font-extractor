@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch: # Add this to enable manual triggering
 
 env:
   CI: true
