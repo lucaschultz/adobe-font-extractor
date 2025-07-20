@@ -1,0 +1,70 @@
+{
+  "name": "adobe-font-extractor",
+  "author": "Luca Schultz",
+  "description": "Extract installed Adobe fonts",
+  "license": "MIT",
+  "type": "module",
+  "version": "0.0.1",
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "adobe-font-extractor": "dist/cli.js",
+    "__adobe-font-extractor_bash_complete": "dist/bash-complete.js"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "prebuild": "tsc -p src/tsconfig.json",
+    "build": "tsup",
+    "prepublishOnly": "pnpm run build",
+    "postinstall": "adobe-font-extractor install",
+    "format": "dprint fmt",
+    "format:check": "dprint check",
+    "lint": "biome lint",
+    "lint:fix": "biome lint --fix",
+    "lint:spelling": "cspell .",
+    "lint:knip": "knip",
+    "lint:md": "markdownlint-cli2"
+  },
+  "tsup": {
+    "entry": [
+      "src/bin/cli.ts",
+      "src/bin/bash-complete.ts"
+    ],
+    "format": [
+      "esm"
+    ],
+    "tsconfig": "src/tsconfig.json",
+    "clean": true,
+    "splitting": true,
+    "minify": true
+  },
+  "dependencies": {
+    "@stricli/auto-complete": "^1.2.0",
+    "@stricli/core": "^1.2.0",
+    "arktype": "^2.1.20",
+    "dprint": "^0.50.1",
+    "fontkit": "^2.0.4",
+    "picomatch": "^4.0.3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.1.2",
+    "@types/fontkit": "^2.0.8",
+    "@types/node": "24.x",
+    "@types/picomatch": "^4.0.1",
+    "cspell": "^9.2.0",
+    "knip": "^5.62.0",
+    "markdownlint-cli2": "^0.18.1",
+    "tsup": "^6.7.0",
+    "typescript": "5.6.x"
+  },
+  "packageManager": "pnpm@10.12.1",
+  "pnpm": {
+    "configDependencies": {
+      "@pnpm/plugin-trusted-deps": "0.1.0+sha512-OK05vSZpezQHcS7Y0T5A25QXDbBRtRq52s76eOkMgp9v8ifNrIR8pjIGqrUFUn0PwKLt2i+U1LPYB+RWi1xjaQ=="
+    },
+    "onlyBuiltDependenciesFile": "node_modules/.pnpm-config/@pnpm/plugin-trusted-deps/allow.json"
+  }
+}

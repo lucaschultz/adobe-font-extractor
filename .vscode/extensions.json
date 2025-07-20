@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "dprint.dprint",
+    "biomejs.biome",
+    "DavidAnson.vscode-markdownlint",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}

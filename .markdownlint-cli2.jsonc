@@ -1,0 +1,9 @@
+{
+  "$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint-cli2/v0.18.1/schema/markdownlint-cli2-config-schema.json",
+  "globs": ["**/*.md", "!node_modules"],
+  "config": {
+    "line-length": {
+      "tables": false
+    }
+  }
+}
