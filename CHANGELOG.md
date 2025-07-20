@@ -1,5 +1,11 @@
 # adobe-font-extractor
 
+## 1.0.1
+
+### Patch Changes
+
+- c50f0e1: Improve output of `extract` and `list` commands
+
 ## 1.0.0
 
 ### Major Changes
