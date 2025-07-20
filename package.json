@@ -1,9 +1,14 @@
 {
   "name": "adobe-font-extractor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Luca Schultz",
   "description": "A command-line utility for extracting Adobe fonts on macOS and Windows.",
-  "keywords": ["font", "cli", "adobe", "typography"],
+  "keywords": [
+    "font",
+    "cli",
+    "adobe",
+    "typography"
+  ],
   "license": "MIT",
   "type": "module",
   "homepage": "https://github.com/lucaschultz/adobe-font-extractor#readme",
@@ -14,7 +19,9 @@
   "bugs": {
     "url": "https://github.com/lucaschultz/adobe-font-extractor/issues"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "bin": {
     "adobe-font-extractor": "dist/cli.js",
     "__adobe-font-extractor_bash_complete": "dist/bash-complete.js"
@@ -40,8 +47,13 @@
     "ci:publish": "pnpm publish -r"
   },
   "tsup": {
-    "entry": ["src/bin/cli.ts", "src/bin/bash-complete.ts"],
-    "format": ["esm"],
+    "entry": [
+      "src/bin/cli.ts",
+      "src/bin/bash-complete.ts"
+    ],
+    "format": [
+      "esm"
+    ],
     "tsconfig": "tsconfig.json",
     "clean": true,
     "splitting": true,
