@@ -1,5 +1,6 @@
 import * as os from "node:os";
 import path from "node:path";
+import type { CommonFlags } from "../commands/extract-command";
 import type { CompatiblePlatform } from "./get-platform";
 
 interface Source {
@@ -9,12 +10,12 @@ interface Source {
 
 export function getSource(
   platform: CompatiblePlatform,
-  flags: { source?: string },
+  flags: CommonFlags,
 ): Source {
-  if (flags.source) {
+  if (flags.sourceDirectory) {
     return {
       type: "custom",
-      path: path.resolve(flags.source),
+      path: path.resolve(flags.sourceDirectory),
     };
   }
 

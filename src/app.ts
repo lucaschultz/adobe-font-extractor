@@ -18,6 +18,8 @@ const routes = buildRouteMap({
   },
   docs: {
     brief: description,
+    fullDescription:
+      "Lists and extracts installed Adobe fonts. If a font is missing, make sure it is installed on the Adobe fonts site (https://fonts.adobe.com) and that the Creative Cloud app is installed and running.",
     hideRoute: {
       install: true,
       uninstall: true,
@@ -27,6 +29,14 @@ const routes = buildRouteMap({
 
 export const app = buildApplication(routes, {
   name,
+  scanner: {
+    caseStyle: "allow-kebab-for-camel",
+  },
+  documentation: {
+    caseStyle: "convert-camel-to-kebab",
+    disableAnsiColor: true,
+    useAliasInUsageLine: true,
+  },
   versionInfo: {
     currentVersion: version,
   },

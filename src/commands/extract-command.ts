@@ -1,39 +1,34 @@
 import * as path from "node:path";
 import { buildCommand } from "@stricli/core";
-import { type } from "arktype";
-import type { LocalContext } from "../context";
-import { copyFile } from "../utils/copy-file";
-import { directoryExists } from "../utils/directory-exists";
-import { getFontFontInfos } from "../utils/get-font-infos";
-import { getPlatform } from "../utils/get-platform";
-import { getSource } from "../utils/get-source";
+import {
+  type CommonFlags,
+  CommonFlagsAliases,
+  CommonFlagsConfig,
+} from "../shared/common-flags";
+import type { LocalContext } from "../shared/context";
+import { copyFile } from "../shared/copy-file";
+import { directoryExists } from "../shared/directory-exists";
+import { getFontFontInfos } from "../shared/get-font-infos";
+import { getPlatform } from "../shared/get-platform";
+import { getSource } from "../shared/get-source";
 import {
   DefaultFilter,
   makeFontInfoFilter,
-} from "../utils/make-font-info-filter";
-import {
-  makeLogger,
-  type Summary,
-  type VerbosityLevel,
-  VerbosityLevels,
-} from "../utils/make-logger";
-import { makeParser } from "../utils/make-parser";
-import { relative } from "../utils/relative";
+} from "../shared/make-font-info-filter";
+import { makeLogger, type Summary } from "../shared/make-logger";
+import { relative } from "../shared/relative";
 
-interface Flags {
+interface ExtractCommandFlags extends CommonFlags {
   force: boolean;
-  dry: boolean;
-  verbosity: VerbosityLevel;
-  source?: string;
-  pattern: string;
-  abort: boolean;
+  dryRun: boolean;
+  abortOnError: boolean;
 }
 
 export const extractCommand = buildCommand({
   async func(
     this: LocalContext,
-    flags: Flags,
-    destination: string,
+    flags: ExtractCommandFlags,
+    targetDir: string,
   ): Promise<void> {
     const start = performance.now();
     const logger = makeLogger(flags.verbosity);
@@ -61,15 +56,19 @@ export const extractCommand = buildCommand({
       return process.exit(1);
     }
 
-    logger.task(`Searching fonts${flags.source ? ` in ${flags.source}` : ""}`);
+    logger.task(
+      `Searching fonts${flags.sourceDirectory ? ` in ${flags.sourceDirectory}` : ""}`,
+    );
 
     const fontInfos = await getFontFontInfos({
       source: source.path,
     });
 
     if (fontInfos.length === 0) {
-      if (flags.source) {
-        logger.error(`No fonts found in source directory "${flags.source}"`);
+      if (flags.sourceDirectory) {
+        logger.error(
+          `No fonts found in source directory "${flags.sourceDirectory}"`,
+        );
       } else {
         logger.error(
           `No fonts found in default Adobe fonts directory, make sure you have Adobe fonts installed and the Creative Cloud app running.`,
@@ -83,7 +82,7 @@ export const extractCommand = buildCommand({
 
     if (filteredFontInfos.length === 0) {
       logger.warn(
-        `No fonts matched filter "${flags.pattern}" (${fontInfos.length} fonts total)`,
+        `No fonts matched filter "${flags.globPattern}" (${fontInfos.length} fonts total)`,
       );
 
       return process.exit(1);
@@ -91,8 +90,8 @@ export const extractCommand = buildCommand({
 
     logger.success(
       `Found ${filteredFontInfos.length} fonts ${
-        flags.pattern !== DefaultFilter
-          ? `matching "${flags.pattern}" (${fontInfos.length} fonts total)`
+        flags.globPattern !== DefaultFilter
+          ? `matching "${flags.globPattern}" (${fontInfos.length} fonts total)`
           : ""
       }`,
     );
@@ -104,7 +103,7 @@ export const extractCommand = buildCommand({
     for (const fontInfo of filteredFontInfos) {
       const fontExtension = path.extname(fontInfo.path);
       const fontDestinationPath = path.join(
-        destination,
+        targetDir,
         `${fontInfo.name}${fontExtension}`,
       );
 
@@ -112,7 +111,7 @@ export const extractCommand = buildCommand({
         src: fontInfo.path,
         dest: fontDestinationPath,
         force: flags.force,
-        dryRun: flags.dry,
+        dryRun: flags.dryRun,
       });
 
       if (result.status === "success" || result.status === "overridden") {
@@ -129,7 +128,7 @@ export const extractCommand = buildCommand({
         );
       } else if (result.status === "error") {
         errorCount++;
-        if (flags.abort) {
+        if (flags.abortOnError) {
           throw result.cause;
         }
         logger.error(
@@ -143,7 +142,7 @@ export const extractCommand = buildCommand({
 
     const { exitCode, summary } = summarize({
       kind: "fonts-processed",
-      destination,
+      destination: targetDir,
       fontsFiltered: filteredFontInfos.length,
       fontsCopiedSuccessfully: successCount,
       fontsSkipped: skippedCount,
@@ -157,46 +156,25 @@ export const extractCommand = buildCommand({
   },
   parameters: {
     aliases: {
-      p: "pattern",
-      s: "source",
-      v: "verbosity",
-      a: "abort",
-      d: "dry",
+      ...CommonFlagsAliases,
+      a: "abortOnError",
+      d: "dryRun",
       f: "force",
     },
     flags: {
-      source: {
-        optional: true,
-        kind: "parsed",
-        brief: "Custom source directory to search for fonts",
-        parse: makeParser(type("string")),
-        placeholder: "source",
-        hidden: true,
-      },
-      abort: {
+      ...CommonFlagsConfig,
+
+      abortOnError: {
         kind: "boolean",
-        brief: "Abort on errors",
+        brief: "Stop on recoverable errors",
         default: false,
-      },
-      pattern: {
-        kind: "parsed",
-        brief: "Filter fonts by glob pattern (should be quoted)",
-        placeholder: "pattern",
-        default: `${DefaultFilter}`,
-        parse: makeParser(type("string")),
-      },
-      verbosity: {
-        kind: "enum",
-        values: VerbosityLevels,
-        brief: "Set the verbosity",
-        default: "info",
       },
       force: {
         kind: "boolean",
         brief: "Force overwrite existing files",
         default: false,
       },
-      dry: {
+      dryRun: {
         kind: "boolean",
         brief: "Dry run, do not copy files",
         default: false,
@@ -206,9 +184,9 @@ export const extractCommand = buildCommand({
       kind: "tuple",
       parameters: [
         {
-          brief: "Destination",
+          brief: "Directory to copy fonts to",
           parse: String,
-          placeholder: "destination",
+          placeholder: "target-directory",
         },
       ],
     },
@@ -220,7 +198,7 @@ export const extractCommand = buildCommand({
   },
 });
 
-type CommandResult = {
+interface CommandResult {
   kind: "fonts-processed";
   destination: string;
   fontsFiltered: number;
@@ -228,8 +206,8 @@ type CommandResult = {
   fontsSkipped: number;
   copyErrors: number;
   duration: number;
-  flags: Flags;
-};
+  flags: ExtractCommandFlags;
+}
 
 function summarize(result: CommandResult): {
   exitCode: 1 | 0;
@@ -238,7 +216,7 @@ function summarize(result: CommandResult): {
   const summary: Summary = [{ type: "section", message: "Summary" }];
   let exitCode: 1 | 0 = 0;
 
-  if (result.flags.dry) {
+  if (result.flags.dryRun) {
     summary.push({
       type: "info",
       message: "Dry run, no files were copied",

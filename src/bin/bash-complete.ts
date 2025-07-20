@@ -2,7 +2,7 @@
 
 import { proposeCompletions } from "@stricli/core";
 import { app } from "../app";
-import { buildContext } from "../context";
+import { buildContext } from "../shared/context";
 
 const inputs = process.argv.slice(3);
 

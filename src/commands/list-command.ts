@@ -1,29 +1,21 @@
 import { buildCommand } from "@stricli/core";
-import { type } from "arktype";
-import type { LocalContext } from "../context";
-import { directoryExists } from "../utils/directory-exists";
-import { getFontFontInfos } from "../utils/get-font-infos";
-import { getPlatform } from "../utils/get-platform";
-import { getSource } from "../utils/get-source";
 import {
-  DefaultFilter,
-  makeFontInfoFilter,
-} from "../utils/make-font-info-filter";
-import {
-  makeLogger,
-  type VerbosityLevel,
-  VerbosityLevels,
-} from "../utils/make-logger";
-import { makeParser } from "../utils/make-parser";
+  type CommonFlags,
+  CommonFlagsAliases,
+  CommonFlagsConfig,
+} from "../shared/common-flags";
+import type { LocalContext } from "../shared/context";
+import { directoryExists } from "../shared/directory-exists";
+import { getFontFontInfos } from "../shared/get-font-infos";
+import { getPlatform } from "../shared/get-platform";
+import { getSource } from "../shared/get-source";
+import { makeFontInfoFilter } from "../shared/make-font-info-filter";
+import { makeLogger } from "../shared/make-logger";
 
-interface Flags {
-  verbosity: VerbosityLevel;
-  source?: string;
-  pattern: string;
-}
+interface ListCommandFlags extends CommonFlags {}
 
 export const listCommand = buildCommand({
-  async func(this: LocalContext, flags: Flags): Promise<void> {
+  async func(this: LocalContext, flags: ListCommandFlags): Promise<void> {
     const logger = makeLogger(flags.verbosity);
 
     logger.section("List Adobe Fonts".toUpperCase());
@@ -63,7 +55,7 @@ export const listCommand = buildCommand({
 
     if (filteredFontInfos.length === 0) {
       logger.warn(
-        `No fonts matched the filter "${flags.pattern}" (${fontInfos.length} fonts total)`,
+        `No fonts matched the filter "${flags.globPattern}" (${fontInfos.length} fonts total)`,
       );
       process.exit(1);
     }
@@ -73,29 +65,9 @@ export const listCommand = buildCommand({
     });
   },
   parameters: {
-    aliases: { p: "pattern", s: "source", v: "verbosity" },
+    aliases: { ...CommonFlagsAliases },
     flags: {
-      pattern: {
-        kind: "parsed",
-        brief: "Filter fonts by glob pattern (should be quoted)",
-        placeholder: "pattern",
-        default: `${DefaultFilter}`,
-        parse: makeParser(type("string")),
-      },
-      verbosity: {
-        kind: "enum",
-        values: VerbosityLevels,
-        brief: "Set the verbosity",
-        default: "info",
-      },
-      source: {
-        optional: true,
-        kind: "parsed",
-        brief: "Custom source directory to search for fonts",
-        parse: makeParser(type("string")),
-        placeholder: "source",
-        hidden: true,
-      },
+      ...CommonFlagsConfig,
     },
     positional: {
       kind: "tuple",
