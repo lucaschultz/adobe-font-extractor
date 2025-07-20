@@ -7,12 +7,26 @@ env:
   CI: true
 
 jobs:
+  check-branch:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    outputs:
+      should_run: ${{ steps.set-output.outputs.should_run }}
+    steps:
+      - id: set-output
+        run: echo "should_run=true" >> $GITHUB_OUTPUT
+      - name: Branch warning
+        if: github.ref != 'refs/heads/main'
+        run: echo "::error::This workflow can only be run from the main branch"
+
   version:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code repository
         uses: actions/checkout@v4
+        with:
+          ref: main # Always checkout the main branch
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
