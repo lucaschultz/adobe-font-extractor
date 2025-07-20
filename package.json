@@ -27,7 +27,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "prepublishOnly": "pnpm run build",
-    "postinstall": "adobe-font-extractor install",
+    "postinstall": "node -e \"process.env.CI !== 'true' && process.exit(1)\" || adobe-font-extractor install",
     "format": "dprint fmt",
     "format:check": "dprint check",
     "lint": "biome check --formatter-enabled=false --linter-enabled=true --assist-enabled=true",
