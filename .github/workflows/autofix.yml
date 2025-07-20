@@ -9,6 +9,9 @@ on:
 permissions:
   contents: read
 
+env:
+  CI: true
+
 jobs:
   autofix:
     name: Autofix Lint Errors and Formatting

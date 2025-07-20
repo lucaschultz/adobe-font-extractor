@@ -1,18 +1,17 @@
 name: Checks
 
 on:
-  workflow_run:
-    workflows:
-      - autofix.ci
-    types:
-      - completed
+  pull_request:
+  push:
     branches:
-      - main
       - dev
+      - main
+
+env:
+  CI: true
 
 jobs:
   lint-typecheck:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: Lint and Typecheck
     runs-on: ubuntu-latest
 
