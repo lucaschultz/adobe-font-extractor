@@ -1,6 +1,6 @@
 import * as os from "node:os";
 import path from "node:path";
-import type { CommonFlags } from "../commands/extract-command";
+import type { CommonFlags } from "./common-flags";
 import type { CompatiblePlatform } from "./get-platform";
 
 interface Source {
