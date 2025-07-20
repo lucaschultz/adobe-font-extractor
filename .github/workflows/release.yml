@@ -9,17 +9,19 @@ env:
 jobs:
   check-branch:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     outputs:
       should_run: ${{ steps.set-output.outputs.should_run }}
     steps:
       - id: set-output
+        if: github.ref == 'refs/heads/main'
         run: echo "should_run=true" >> $GITHUB_OUTPUT
       - name: Branch warning
         if: github.ref != 'refs/heads/main'
         run: echo "::error::This workflow can only be run from the main branch"
 
   version:
+    needs: check-branch
+    if: needs.check-branch.outputs.should_run == 'true'
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
