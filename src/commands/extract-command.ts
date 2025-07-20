@@ -1,5 +1,6 @@
 import * as path from "node:path";
 import { buildCommand } from "@stricli/core";
+import { version } from "../../package.json";
 import {
   type CommonFlags,
   CommonFlagsAliases,
@@ -33,7 +34,7 @@ export const extractCommand = buildCommand({
     const start = performance.now();
     const logger = makeLogger(flags.verbosity);
 
-    logger.section("Adobe Font Extractor".toUpperCase());
+    logger.section(`${"Adobe Font Extractor".toUpperCase()} v${version}`);
     logger.newLine();
 
     const platform = getPlatform();

@@ -1,4 +1,5 @@
 import { buildCommand } from "@stricli/core";
+import { version } from "../../package.json";
 import {
   type CommonFlags,
   CommonFlagsAliases,
@@ -18,7 +19,7 @@ export const listCommand = buildCommand({
   async func(this: LocalContext, flags: ListCommandFlags): Promise<void> {
     const logger = makeLogger(flags.verbosity);
 
-    logger.section("List Adobe Fonts".toUpperCase());
+    logger.section(`${"Adobe Font Extractor".toUpperCase()} v${version}`);
     logger.newLine();
 
     const platform = getPlatform();

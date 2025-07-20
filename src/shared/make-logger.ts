@@ -71,23 +71,23 @@ export function makeLogger(verbosity: VerbosityLevel): Logger {
     },
 
     success(message: string) {
-      this.log("info", `[+] ${message}`);
+      this.log("info", `(+) ${message}`);
     },
 
     debug(message: string) {
-      this.log("debug", `[#] ${message}`);
+      this.log("debug", `(?) ${message}`);
     },
 
     info(message: string) {
-      this.log("info", `[i] ${message}`);
+      this.log("info", `(i) ${message}`);
     },
 
     warn(message: string) {
-      this.log("info", `[!] ${message}`);
+      this.log("info", `(!) ${message}`);
     },
 
     error(message: string) {
-      this.log("error", `[-] ${message}`);
+      this.log("error", `(x) ${message}`);
     },
 
     summary(summary: Summary) {
