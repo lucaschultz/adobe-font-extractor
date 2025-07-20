@@ -1,16 +1,21 @@
 name: Release
 
 on:
-  push:
+  workflow_dispatch: # Add this to enable manual triggering
+  workflow_run:
+    workflows:
+      - Checks
+    types:
+      - completed
     branches:
       - main
-  workflow_dispatch: # Add this to enable manual triggering
 
 env:
   CI: true
 
 jobs:
   version:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
