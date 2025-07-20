@@ -1,0 +1,21 @@
+name: Setup
+description: Common setup steps for Actions
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v4
+      name: Install pnpm
+      with:
+        package_json_file: package.json
+        run_install: false
+
+    - uses: actions/setup-node@v4
+      name: Setup Node.js with pnpm cache
+      with:
+        node-version-file: .node-version
+        cache: pnpm
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
