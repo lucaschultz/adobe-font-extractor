@@ -3,9 +3,7 @@ import type { FontInfo } from "./get-font-infos";
 
 export const DefaultFilter = "*";
 
-export function makeFontInfoFilter(
-  flags: { pattern: string },
-) {
+export function makeFontInfoFilter(flags: { pattern: string }) {
   const matcher = picomatch(flags.pattern);
 
   return (fontInfo: FontInfo) => {

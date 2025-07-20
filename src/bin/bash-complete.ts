@@ -12,13 +12,11 @@ if (process.env["COMP_LINE"]?.endsWith(" ")) {
 }
 await proposeCompletions(app, inputs, buildContext(process));
 try {
-  for (
-    const { completion } of await proposeCompletions(
-      app,
-      inputs,
-      buildContext(process),
-    )
-  ) {
+  for (const { completion } of await proposeCompletions(
+    app,
+    inputs,
+    buildContext(process),
+  )) {
     process.stdout.write(`${completion}\n`);
   }
 } catch {

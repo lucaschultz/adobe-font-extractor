@@ -1,6 +1,6 @@
-import * as fontkit from "fontkit";
 import * as fs from "node:fs/promises";
 import path from "node:path";
+import * as fontkit from "fontkit";
 
 export interface FontInfo {
   name: string;

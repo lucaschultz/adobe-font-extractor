@@ -1,6 +1,6 @@
+import * as path from "node:path";
 import { buildCommand } from "@stricli/core";
 import { type } from "arktype";
-import * as path from "node:path";
 import type { LocalContext } from "../context";
 import { copyFile } from "../utils/copy-file";
 import { directoryExists } from "../utils/directory-exists";

@@ -5,9 +5,7 @@
   "license": "MIT",
   "type": "module",
   "version": "0.0.1",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "bin": {
     "adobe-font-extractor": "dist/cli.js",
     "__adobe-font-extractor_bash_complete": "dist/bash-complete.js"
@@ -22,20 +20,15 @@
     "postinstall": "adobe-font-extractor install",
     "format": "dprint fmt",
     "format:check": "dprint check",
-    "lint": "biome lint",
-    "lint:fix": "biome lint --fix",
+    "lint": "biome check --formatter-enabled=false --linter-enabled=true --assist-enabled=true",
+    "lint:fix": "biome check --formatter-enabled=false --linter-enabled=true --assist-enabled=true --write",
     "lint:spelling": "cspell .",
     "lint:knip": "knip",
     "lint:md": "markdownlint-cli2"
   },
   "tsup": {
-    "entry": [
-      "src/bin/cli.ts",
-      "src/bin/bash-complete.ts"
-    ],
-    "format": [
-      "esm"
-    ],
+    "entry": ["src/bin/cli.ts", "src/bin/bash-complete.ts"],
+    "format": ["esm"],
     "tsconfig": "src/tsconfig.json",
     "clean": true,
     "splitting": true,

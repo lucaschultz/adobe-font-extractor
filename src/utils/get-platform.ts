@@ -1,14 +1,16 @@
-import { ArkErrors, type } from "arktype";
 import * as os from "node:os";
+import { ArkErrors, type } from "arktype";
 
 const CompatiblePlatform = type("'darwin' | 'win32'");
 
 export type CompatiblePlatform = typeof CompatiblePlatform.infer;
 
-export function getPlatform(): {
-  status: "compatible";
-  name: CompatiblePlatform;
-} | { status: "incompatible"; message: string } {
+export function getPlatform():
+  | {
+      status: "compatible";
+      name: CompatiblePlatform;
+    }
+  | { status: "incompatible"; message: string } {
   const platform = CompatiblePlatform(os.platform());
 
   if (platform instanceof ArkErrors) {

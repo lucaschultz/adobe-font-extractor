@@ -1,12 +1,12 @@
-import type { StricliAutoCompleteContext } from "@stricli/auto-complete";
-import type { CommandContext } from "@stricli/core";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import type { StricliAutoCompleteContext } from "@stricli/auto-complete";
+import type { CommandContext } from "@stricli/core";
 
 export interface LocalContext
-  extends CommandContext, StricliAutoCompleteContext
-{
+  extends CommandContext,
+    StricliAutoCompleteContext {
   readonly process: NodeJS.Process;
 }
 
